@@ -1,0 +1,26 @@
+{
+  "name": "rns-full-suite",
+  "version": "1.0.0",
+  "description": "RNS full contract suite",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rsksmart/rns-full-suite.git"
+  },
+  "author": "Javier Esses",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rsksmart/rns-full-suite/issues"
+  },
+  "homepage": "https://github.com/rsksmart/rns-full-suite#readme",
+  "dependencies": {
+    "@ensdomains/ethregistrar": "1.2.2",
+    "@openzeppelin/contracts": "^2.3.0"
+  }
+}
