@@ -7,5 +7,3 @@ _templates
 
 # Compiled contract ABIs and binaries
 build/contracts/*
-# Keep the RNS lll artifact
-!build/contracts/RNS.lll.json
