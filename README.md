@@ -32,5 +32,6 @@ Once the Truffle Console is running
 truffle(development)> migrate
 ```
 
+These instructions assume you are running the Truffle local blockchain with the default settings. If you are using another blockchain such as Ganache, just change the port in the `truffle-config.js` file.
 
 
