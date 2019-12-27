@@ -9,6 +9,7 @@ const ReverseRegistrar = artifacts.require('ReverseRegistrar');
 const PublicResolver = artifacts.require('PublicResolver');
 const BytesUtils = artifacts.require('BytesUtils');
 const MultiChainResolver = artifacts.require('MultiChainResolver');
+const Renewer = artifacts.require('Renewer');
 
 const namehash = require('eth-ens-namehash').hash;
 
@@ -20,7 +21,7 @@ module.exports = (deployer, network, accounts) => {
   }
 
   //owner of the domain registered during the migration
-  const DEV_ADDRESS = 'YOUR_ADDRESS';
+  const DEV_ADDRESS = 'PASTE_YOUR_ADDRESS_HERE';
   
   //label to be registered using the old auction model registrar
   const AUCTION_LABEL = 'alice';
@@ -29,7 +30,7 @@ module.exports = (deployer, network, accounts) => {
 }
 
 function deployLocal(deployer, accounts, devAddress, auctionLabel, tldNode) {
-  let rns, rif, tokenRegistrar, rskOwner;
+  let rns, rif, tokenRegistrar, rskOwner, namePrice;
 
   const SHA_LABEL = web3.utils.sha3(auctionLabel);
   const INITIAL_RIF_SUPPLY = web3.utils.toBN('100000000000000000000000'); // 100 RIF
@@ -53,10 +54,10 @@ function deployLocal(deployer, accounts, devAddress, auctionLabel, tldNode) {
   .then(() => {
     return deployer.deploy(PublicResolver, rns.address);
   })
-  .then((publicResolver) => {
+  .then(publicResolver => {
     return deployer.deploy(MultiChainResolver, rns.address, publicResolver.address);
   })
-  .then((multiChainResolver) => {    
+  .then(multiChainResolver => {    
     return rns.setDefaultResolver(multiChainResolver.address);
   })
 
@@ -131,10 +132,11 @@ function deployLocal(deployer, accounts, devAddress, auctionLabel, tldNode) {
   .then(() => {
     return deployer.deploy(NamePrice);
   })
-  .then((namePrice) => {
+  .then(_namePrice => {
+    namePrice = _namePrice;
     return deployer.deploy(FIFSRegistrar, rif.address, rskOwner.address, POOL, namePrice.address);
   })
-  .then((registrar) => {
+  .then(registrar => {
     return rskOwner.addRegistrar(registrar.address);
   })
 
@@ -149,10 +151,21 @@ function deployLocal(deployer, accounts, devAddress, auctionLabel, tldNode) {
   .then(() => {
     return deployer.deploy(NameResolver, rns.address);
   })
-  .then((nameResolver) => {      
+  .then(nameResolver => {      
     return rns.setResolver(namehash('reverse'), nameResolver.address);
   })
   .then(() => {
     return rns.setSubnodeOwner(namehash('reverse'), web3.utils.sha3('addr'), reverseRegistrar.address);
+  })
+
+  // renewer
+  .then(() => {
+    return deployer.link(BytesUtils, Renewer);
+  })
+  .then(() => {
+    return deployer.deploy(Renewer, rif.address, rskOwner.address, POOL, namePrice.address);
+  })
+  .then(renewer => {
+    return rskOwner.addRenewer(renewer.address);
   });
 }
