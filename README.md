@@ -65,6 +65,8 @@ These instructions assume you are running the Truffle local blockchain with the 
     };
     ```
 
+> `./sample` contains a new truffle project after setup.
+
 Check by running:
 
 ```
