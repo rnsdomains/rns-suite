@@ -1,7 +1,13 @@
 {
-  "name": "@rsksmart/rns-full-suite",
+  "name": "@rsksmart/rns-suite",
   "version": "1.0.0",
-  "description": "RNS full contract suite",
+  "description": "RNS full suite",
+  "main": "index.js",
+  "files": [
+    "/contracts",
+    "!/contracts/Migrations.sol",
+    "index.js"
+  ],
   "scripts": {
     "test": "truffle test"
   },
@@ -21,6 +27,7 @@
     "@rsksmart/rns-registry": "^1.0.0",
     "@rsksmart/rns-resolver": "^1.0.0",
     "@rsksmart/rns-reverse": "^1.0.0",
-    "@rsksmart/rns-rskregistrar": "^1.1.1"
+    "@rsksmart/rns-rskregistrar": "^1.1.1",
+    "web3-utils": "^1.2.4"
   }
 }
