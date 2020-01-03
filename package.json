@@ -1,11 +1,7 @@
 {
-  "name": "rns-full-suite",
+  "name": "@rsksmart/rns-full-suite",
   "version": "1.0.0",
   "description": "RNS full contract suite",
-  "main": "truffle-config.js",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
     "test": "truffle test"
   },
@@ -20,7 +16,11 @@
   },
   "homepage": "https://github.com/rsksmart/rns-full-suite#readme",
   "dependencies": {
-    "@ensdomains/ethregistrar": "1.2.2",
-    "@openzeppelin/contracts": "^2.3.0"
+    "@rsksmart/erc677": "^1.0.1",
+    "@rsksmart/rns-auction-registrar": "^1.0.1",
+    "@rsksmart/rns-registry": "^1.0.0",
+    "@rsksmart/rns-resolver": "^1.0.0",
+    "@rsksmart/rns-reverse": "^1.0.0",
+    "@rsksmart/rns-rskregistrar": "^1.1.1"
   }
 }

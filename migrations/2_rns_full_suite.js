@@ -1,5 +1,5 @@
 const RNS = artifacts.require('RNS');
-const RIF = artifacts.require('ERC677TokenContract');
+const RIF = artifacts.require('ERC677');
 const TokenRegistrar = artifacts.require('TokenRegistrar');
 const RSKOwner = artifacts.require('RSKOwner');
 const FIFSRegistrar = artifacts.require('FIFSRegistrar');
@@ -20,9 +20,12 @@ module.exports = (deployer, network, accounts) => {
     sha: web3.utils.sha3(TLD)
   }
 
-  //owner of the domain registered during the migration
-  const DEV_ADDRESS = 'PASTE_YOUR_ADDRESS_HERE';
-  
+  // DEV_ADDRESS
+  // Paste here an address that will own some rif tokens
+  // and a domain in auction registrar, or use [0] account
+  // as default
+  const DEV_ADDRESS = '' || accounts[0];
+
   //label to be registered using the old auction model registrar
   const AUCTION_LABEL = 'alice';
 
@@ -43,21 +46,21 @@ function deployLocal(deployer, accounts, devAddress, auctionLabel, tldNode) {
     rns = _rns;
   })
   .then(() => {
-    return deployer.deploy(RIF, ROOT_OWNER, INITIAL_RIF_SUPPLY);
+    return deployer.deploy(RIF, ROOT_OWNER, INITIAL_RIF_SUPPLY, 'RIFOS', 'RIF', web3.utils.toBN('18'));
   })
   .then(_rif => {
     rif = _rif;
     return rif.transfer(devAddress, DEV_RIF_AMOUNT);
   })
 
-  // public and multichain resolvers 
+  // public and multichain resolvers
   .then(() => {
     return deployer.deploy(PublicResolver, rns.address);
   })
   .then(publicResolver => {
     return deployer.deploy(MultiChainResolver, rns.address, publicResolver.address);
   })
-  .then(multiChainResolver => {    
+  .then(multiChainResolver => {
     return rns.setDefaultResolver(multiChainResolver.address);
   })
 
@@ -151,7 +154,7 @@ function deployLocal(deployer, accounts, devAddress, auctionLabel, tldNode) {
   .then(() => {
     return deployer.deploy(NameResolver, rns.address);
   })
-  .then(nameResolver => {      
+  .then(nameResolver => {
     return rns.setResolver(namehash('reverse'), nameResolver.address);
   })
   .then(() => {
