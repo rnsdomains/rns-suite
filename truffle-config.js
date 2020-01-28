@@ -80,6 +80,11 @@ module.exports = {
       port: 9545,
       network_id: "*",
     },
+    regtest: {
+      host: "127.0.0.1",
+      port: 4444,
+      network_id: "*",
+    },
   },
 
   // Set default mocha options here, use special reporters etc.
