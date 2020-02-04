@@ -15,6 +15,7 @@ import "@rsksmart/rns-auction-registrar/contracts/TokenRegistrar.sol";
 
 import "@rsksmart/rns-rskregistrar/contracts/RSKOwner.sol";
 import "@rsksmart/rns-rskregistrar/contracts/FIFSRegistrar.sol";
+import "@rsksmart/rns-rskregistrar/contracts/FIFSAddrRegistrar.sol";
 import "@rsksmart/rns-rskregistrar/contracts/Renewer.sol";
 import "@rsksmart/rns-rskregistrar/contracts/NamePrice.sol";
 

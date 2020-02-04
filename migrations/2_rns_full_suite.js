@@ -3,6 +3,7 @@ const RIF = artifacts.require('ERC677');
 const TokenRegistrar = artifacts.require('TokenRegistrar');
 const RSKOwner = artifacts.require('RSKOwner');
 const FIFSRegistrar = artifacts.require('FIFSRegistrar');
+const FIFSAddrRegistrar = artifacts.require('FIFSAddrRegistrar');
 const NamePrice = artifacts.require('NamePrice');
 const NameResolver = artifacts.require('NameResolver');
 const ReverseRegistrar = artifacts.require('ReverseRegistrar');
@@ -141,6 +142,17 @@ function deployLocal(deployer, accounts, devAddress, auctionLabel, tldNode) {
   })
   .then(registrar => {
     return rskOwner.addRegistrar(registrar.address);
+  })
+
+  // and the fifs addr registrar
+  .then(() => {
+    return deployer.link(BytesUtils, FIFSAddrRegistrar);
+  })
+  .then(() => {
+    return deployer.deploy(FIFSAddrRegistrar, rif.address, rskOwner.address, POOL, namePrice.address, rns.address, tldNode.namehash);
+  })
+  .then(addrRegistrar => {
+    return rskOwner.addRegistrar(addrRegistrar.address);
   })
 
   // reverse resolution
