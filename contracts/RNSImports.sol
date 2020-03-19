@@ -19,5 +19,5 @@ import "@rsksmart/rns-rskregistrar/contracts/FIFSAddrRegistrar.sol";
 import "@rsksmart/rns-rskregistrar/contracts/Renewer.sol";
 import "@rsksmart/rns-rskregistrar/contracts/NamePrice.sol";
 
-contract Dummy {
+contract RNSImports {
 }

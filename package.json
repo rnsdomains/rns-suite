@@ -9,7 +9,8 @@
     "index.js"
   ],
   "scripts": {
-    "test": "truffle test"
+    "start": "npx truffle develop",
+    "test": "npx truffle test"
   },
   "repository": {
     "type": "git",
@@ -29,5 +30,8 @@
     "@rsksmart/rns-reverse": "^1.0.0",
     "@rsksmart/rns-rskregistrar": "^1.2.0",
     "web3-utils": "^1.2.4"
+  },
+  "devDependencies": {
+    "truffle": "^5.1.17"
   }
 }
