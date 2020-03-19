@@ -43,6 +43,11 @@ truffle(develop)> migrate
 
 4. Migrate!
 
+## Extra stuff
+
+- It automatically registers `alice.rsk` in the auction registrar. This allows to test the registrar migration.
+- You can set `DEV_ADDRESS` in `2_run_full_suite.js` to receive all RIF Tokens and `alcie.rsk` in your address. Useful when testing front end.
+
 ## Setup for development
 
 Install dependencies:
@@ -55,12 +60,3 @@ Run the project:
 ```
 npx truffle develop
 ```
-
-## Disclaimer
-
-This solution includes a migrations file that deploys the full suite of RNS in your local environment.
-
-It also registers a name (`alice.rsk`) during the migration so you can start managing it from the beggining.
-
-Find the whole architecture and documentation in our [RSK Developers Portal](https://developers.rsk.co/rif/rns/libs/smart-contracts)
-
