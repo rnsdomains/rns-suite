@@ -50,6 +50,12 @@ async function executeTx(tx, options) {
   );
 }
 
+/**
+ * Deploy RNS suite locally and perform automatic registrations.
+ * @param {string|Web3Provider} provider to deploy the contracts on
+ * @param {string[]} registrations labels to be registered with the current registrar (don't append .rsk)
+ * @param {string[]} auctionRegistrations labels to be registered with the previous registrar (auction) (don't append .rsk)
+ */
 async function main(provider, registrations, auctionRegistrations) {
   console.log(figlet.textSync('Deploying RNS'));
   console.log(chalk.italic('\nThis can take a while...\n\n'));
