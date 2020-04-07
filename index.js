@@ -2,6 +2,7 @@ const figlet = require('figlet');
 const chalk = require('chalk');
 const Web3 = require('web3');
 const namehash = require('eth-ens-namehash').hash;
+const { promisify } = require('util');
 
 const RNS = require('./build/contracts/RNS');
 
@@ -49,7 +50,7 @@ async function executeTx(tx, options) {
   );
 }
 
-async function main(provider) {
+async function main(provider, registrations, auctionRegistrations) {
   console.log(figlet.textSync('Deploying RNS'));
   console.log(chalk.italic('\nThis can take a while...\n\n'));
 
@@ -141,6 +142,79 @@ async function main(provider) {
   console.log(chalk.bold('Connecting auction registrar'));
   await executeTx(rns.methods.setSubnodeOwner('0x00', web3.utils.sha3('rsk'), auctionRegistrar.options.address));
 
+  let registeredDomainsAuction;
+
+  try {
+    if(auctionRegistrations && auctionRegistrations.length) {
+      console.log(chalk.bold('Registering domains with auction'));
+
+      async function increaseTime (duration) {
+        await promisify(web3.currentProvider.send.bind(web3.currentProvider))({
+          jsonrpc: '2.0',
+          method: 'evm_increaseTime',
+          params: [duration],
+          id: new Date().getTime(),
+        });
+
+        await promisify(web3.currentProvider.send.bind(web3.currentProvider))({
+          jsonrpc: '2.0',
+          method: 'evm_mine',
+          id: new Date().getTime(),
+        });
+      }
+
+      const oneToken = web3.utils.toBN('1000000000000000000');
+
+      let labels = [];
+      let domains = [];
+
+      auctionRegistrations.forEach(name => {
+        labels.push(web3.utils.sha3(name));
+        domains.push(`${name}.rsk`)
+      });
+
+      await executeTx(auctionRegistrar.methods.startAuctions(labels));
+      await executeTx(rif.methods.approve(auctionRegistrar.options.address, oneToken.mul(web3.utils.toBN(labels.length))));
+
+      let allBids = [];
+
+      for (let i = 0; i < labels.length; i += 1)
+        allBids.push(
+          auctionRegistrar.methods.shaBid(labels[i], from, oneToken, '0x00').call()
+            .then(sealedBid => executeTx(auctionRegistrar.methods.newBid(sealedBid, oneToken)))
+        );
+
+      await Promise.all(allBids);
+
+      await increaseTime(259200);
+
+      let allReveals = [];
+
+      for (let i = 0; i < labels.length; i += 1)
+        allReveals.push(
+          executeTx(auctionRegistrar.methods.unsealBid(labels[i], oneToken, '0x00'))
+        );
+
+      await Promise.all(allReveals);
+
+      await increaseTime(172800);
+
+      let allFinalizations = [];
+
+      for (let i = 0; i < labels.length; i += 1)
+        allFinalizations.push(
+          executeTx(auctionRegistrar.methods.finalizeAuction(labels[i]))
+        );
+
+      await Promise.all(allFinalizations);
+
+      registeredDomainsAuction = domains;
+    }
+  } catch(error) {
+    console.log(chalk.redBright('Error registering domains in auction!'))
+    console.log(error)
+  }
+
   console.log()
 
   console.log(chalk.italic('RSK Registrar suite'));
@@ -192,6 +266,35 @@ async function main(provider) {
   console.log(chalk.bold('Connecting RSK Registrar suite'));
   await executeTx(rns.methods.setSubnodeOwner('0x00', web3.utils.sha3('rsk'), rskOwner.options.address));
 
+  console.log();
+
+  let registeredDomainsRSKRegistrar;
+
+  if(registrations && registrations.length) {
+    console.log(chalk.bold('Registering domains'));
+
+    let labels = [];
+    let domains = [];
+
+    registrations.forEach(name => {
+      labels.push(web3.utils.sha3(name));
+      domains.push(`${name}.rsk`)
+    });
+
+    await executeTx(rskOwner.methods.addRegistrar(from));
+
+    let allRegistrations = [];
+
+    for (let i = 0; i < labels.length; i += 1)
+      allRegistrations.push(executeTx(rskOwner.methods.register(labels[i], from, web3.utils.toBN('1'))));
+
+    await Promise.all(allRegistrations);
+
+    registeredDomainsRSKRegistrar = domains;
+
+    console.log(`Registered: ${domains}`);
+    console.log();
+  }
 
   console.log('Done! Summary:')
 
@@ -212,6 +315,17 @@ async function main(provider) {
   console.log(`| FIFS addr registrar        | ${fifsAddrRegistrar.options.address} |`)
   console.log(`| Renewer                    | ${renewer.options.address} |`)
   console.log('|============================|============================================|\n')
+
+  if (registeredDomainsAuction)
+    console.log(`Registered domains with the auction registrar(legacy): ${registeredDomainsAuction}`);
+
+  if (!registeredDomainsAuction && auctionRegistrar)
+    console.log(`${chalk.yellowBright('An error occurred registering domains with the auction.')} Ensure you can execute evm_increaseTime and evm_mine`);
+
+  if (registeredDomainsRSKRegistrar)
+    console.log(`Registered domains with the current registrar: ${registeredDomainsRSKRegistrar}`);
+
+  console.log()
 
   return {
     rns,
