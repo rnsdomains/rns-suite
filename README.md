@@ -15,18 +15,20 @@ npm i --save-dev @rsksmart/rns-suite
 Deploy the suite running
 
 ```javascript
-const RNSSuite = require('@rsksmart/rns-suite')
-RNSSuite('http://localhost:8545')
+const RNSSuite = require('@rsksmart/rns-suite');
+RNSSuite('http://localhost:8545', ['alice', 'bob', 'charlie'], ['david', 'eve', 'frank'])
 ```
 
 ### Run from Truffle migrations
 
 ```javascript
 const Migrations = artifacts.require("Migrations");
-const deploy = require('../');
+const RNSSuite = require('@rsksmart/rns-suite');
 
 module.exports = function(deployer) {
-  deployer.deploy(Migrations).then(() => deploy(web3.currentProvider));
+  return deployer.deploy(Migrations).then(() =>
+    RNSSuite(web3.currentProvider, ['alice', 'bob', 'charlie'], ['david', 'eve', 'frank'])
+  )
 };
 ```
 
@@ -46,3 +48,7 @@ npx truffle migrate # migrates to :8545 by default
 ```
 
 Create your custom `truffle-config.js` file to connect to other networks.
+
+## Troubleshot
+
+If you have problems registering domains with the auction ensure you can execute `evm_increaseTime` and `evm_mine` RPC methods in your node.
