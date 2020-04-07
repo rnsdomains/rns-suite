@@ -4,59 +4,45 @@
 
 Get the RNS smart contract suite running on your local environment.
 
+## Usage
+
+Install the RNS suite in your project
+
 ```
+npm i --save-dev @rsksmart/rns-suite
+```
+
+Deploy the suite running
+
+```javascript
+const RNSSuite = require('@rsksmart/rns-suite')
+RNSSuite('http://localhost:8545')
+```
+
+### Run from Truffle migrations
+
+```javascript
+const Migrations = artifacts.require("Migrations");
+const deploy = require('../');
+
+module.exports = function(deployer) {
+  deployer.deploy(Migrations).then(() => deploy(web3.currentProvider));
+};
+```
+
+## Run locally
+
+You can run the suite as a Truffle project
+
+```bash
 git clone https://github.com/rnsdomains/rns-suite
 cd rns-suite
 npm install
-npx truffle develop
-truffle(develop)> migrate
+
+npx truffle develop # starts truffle development blockchain
+truffle(develop)> migrate # migrates in development
+
+npx truffle migrate # migrates to :8545 by default
 ```
 
-## Add RNS Suite to your project migrations
-
-1. Install `rns-suite` with npm
-
-    ```
-    npm i @rsksmart/rns-suite
-    ```
-
-2. Create `RNSImports.sol` contract in `./contracts` folder, to make Truffle compile all dependent contracts
-
-    ```solidity
-    pragma solidity ^0.5.0;
-
-    import "@rsksmart/rns-suite/contracts/RNSImports.sol";
-
-    contract RNSImports {
-    }
-    ```
-
-3. Create `2_rns_suite.js` deployment script in `./migration` .
-
-    ```js
-    const rnsSuite = require('@rsksmart/rns-suite')(artifacts);
-
-    module.exports = function(deployer, _, accounts) {
-      deployer.then(async () => await rnsSuite(deployer, accounts));
-    };
-    ```
-
-4. Migrate!
-
-## Extra stuff
-
-- It automatically registers `alice.rsk` in the auction registrar. This allows to test the registrar migration.
-- You can set `DEV_ADDRESS` in `2_run_full_suite.js` to receive all RIF Tokens and `alcie.rsk` in your address. Useful when testing front end.
-
-## Setup for development
-
-Install dependencies:
-
-```
-npm install
-```
-
-Run the project:
-```
-npx truffle develop
-```
+Create your custom `truffle-config.js` file to connect to other networks.
