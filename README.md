@@ -1,75 +1,54 @@
 <img src="/logo.png" alt="logo" height="200" />
 
-# RIF Name Service Full Suite
+# RNS Suite
 
-This solution includes a migrations file that deploys the full suite of RNS in your local environment.
+Get the RNS smart contract suite running on your local environment.
 
-It also registers a name (`alice.rsk`) during the migration so you can start managing it from the beggining.
+## Usage
 
-Find the whole architecture and documentation in our [RSK Developers Portal](https://developers.rsk.co/rif/rns/libs/smart-contracts)
-
-## Prerequisites
-
-- [Truffle](https://www.trufflesuite.com/) (^5.0.30)
-
-## Setup
+Install the RNS suite in your project
 
 ```
+npm i --save-dev @rsksmart/rns-suite
+```
+
+Deploy the suite running
+
+```javascript
+const RNSSuite = require('@rsksmart/rns-suite');
+RNSSuite('http://localhost:8545', ['alice', 'bob', 'charlie'], ['david', 'eve', 'frank'])
+```
+
+### Run from Truffle migrations
+
+```javascript
+const Migrations = artifacts.require("Migrations");
+const RNSSuite = require('@rsksmart/rns-suite');
+
+module.exports = function(deployer) {
+  return deployer.deploy(Migrations).then(() =>
+    RNSSuite(web3.currentProvider, ['alice', 'bob', 'charlie'], ['david', 'eve', 'frank'])
+  )
+};
+```
+
+## Run locally
+
+You can run the suite as a Truffle project
+
+```bash
+git clone https://github.com/rnsdomains/rns-suite
+cd rns-suite
 npm install
+
+npx truffle develop # starts truffle development blockchain
+truffle(develop)> migrate # migrates in development
+
+npx truffle migrate # migrates to :8545 by default
 ```
 
-## Run
+Create your custom `truffle-config.js` file to connect to other networks.
 
-Go to `migrations/2_rns_full_suite.js` and replace `DEV_ADDRESS` with your address.
+## Troubleshot
 
-Note: if you will use this suite in a browser, we strongly recommend to use [Nifty](https://chrome.google.com/webstore/detail/nifty-wallet/jbdaocneiiinmjbjlgalhcelgbejmnid?hl=en) or [Metamask](https://metamask.io/) wallets. Both work as Google Chrome extensions.
-
-```
-truffle develop
-```
-
-Once the Truffle Console is running
-
-```
-truffle(development)> migrate
-```
-
-These instructions assume you are running the Truffle local blockchain with the default settings. If you are using another blockchain such as Ganache, just change the port in the `truffle-config.js` file.
-
-## Import migrations from another truffle project
-
-1. Install `rns-suite`
-
-    ```
-    npm i @rsksmart/rns-suite
-    ```
-
-2. Create `Dummy2.sol` contract to make Truffle compile dependent contracts.
-
-    ```solidity
-    pragma solidity ^0.5.0;
-
-    import "@rsksmart/rns-suite/contracts/Dummy.sol";
-
-    contract Dummy2 {
-    }
-    ```
-
-3. Create `2_rns_suite.js` migration.
-
-    ```js
-    const rnsSuite = require('@rsksmart/rns-suite')(artifacts);
-
-    module.exports = function(deployer, _, accounts) {
-      deployer.then(async () => await rnsSuite(deployer, accounts));
-    };
-    ```
-
-> `./sample` contains a new truffle project after setup.
-
-Check by running:
-
-```
-truffle develop
-truffle(develop)> migrate
-```
+If you have problems registering domains with the auction ensure you can execute `evm_increaseTime` and `evm_mine` RPC methods in your node.
