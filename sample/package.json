@@ -1,7 +1,0 @@
-{
-  "name": "rns-full-suite-sample",
-  "version": "1.0.0",
-  "dependencies": {
-    "@rsksmart/rns-suite": "^1.0.0"
-  }
-}
