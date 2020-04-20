@@ -1,11 +1,13 @@
 {
   "name": "@rsksmart/rns-suite",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "RNS suite",
   "main": "index.js",
   "files": [
-    "!/contracts/Migrations.sol",
-    "index.js"
+    "index.js",
+    "migrations/",
+    "contracts/",
+    "truffle-config.js"
   ],
   "scripts": {
     "test": "npx truffle test",
