@@ -292,7 +292,7 @@ async function main(provider, registrations, auctionRegistrations) {
     let allRegistrations = [];
 
     for (let i = 0; i < labels.length; i += 1)
-      allRegistrations.push(executeTx(rskOwner.methods.register(labels[i], from, web3.utils.toBN('1'))));
+      allRegistrations.push(executeTx(rskOwner.methods.register(labels[i], from, web3.utils.toBN('99999999999999'))));
 
     await Promise.all(allRegistrations);
 
