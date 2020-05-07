@@ -56,7 +56,7 @@ async function executeTx(tx, options) {
  * @param {string[]} registrations labels to be registered with the current registrar (don't append .rsk)
  * @param {string[]} auctionRegistrations labels to be registered with the previous registrar (auction) (don't append .rsk)
  */
-async function main(provider, registrations, auctionRegistrations) {
+async function main(provider, registrations, auctionRegistrations, registrationsWithAddr) {
   console.log(figlet.textSync('Deploying RNS'));
   console.log(chalk.italic('\nThis can take a while...\n\n'));
 
@@ -276,8 +276,14 @@ async function main(provider, registrations, auctionRegistrations) {
 
   let registeredDomainsRSKRegistrar;
 
-  if(registrations && registrations.length) {
+  if (
+    (registrations && registrations.length) ||
+    (registrationsWithAddr && registrationsWithAddr.length)
+  ) {
     console.log(chalk.bold('Registering domains'));
+
+    if(registrationsWithAddr && registrationsWithAddr.length)
+      registrations = registrations.concat(registrationsWithAddr);
 
     let labels = [];
     let domains = [];
@@ -300,6 +306,20 @@ async function main(provider, registrations, auctionRegistrations) {
 
     console.log(`Registered: ${domains}`);
     console.log();
+
+    if (registrationsWithAddr && registrationsWithAddr.length) {
+      console.log(chalk.bold('Setting addrs'));
+      const allAddrs = [];
+
+      for (let i = 0; i < registrationsWithAddr.length; i += 1)
+        allAddrs.push(
+          executeTx(publicResolver.methods.setAddr(namehash(`${registrationsWithAddr[i]}.rsk`), from))
+        );
+
+      await Promise.all(allAddrs);
+      console.log(`Set addr for: ${domains}`);
+      console.log();
+  }
   }
 
   console.log('Done! Summary:')
@@ -330,6 +350,9 @@ async function main(provider, registrations, auctionRegistrations) {
 
   if (registeredDomainsRSKRegistrar)
     console.log(`Registered domains with the current registrar: ${registeredDomainsRSKRegistrar}`);
+
+  if(registrationsWithAddr)
+    console.log(`Set addr for: ${registrationsWithAddr}`);
 
   console.log()
 
