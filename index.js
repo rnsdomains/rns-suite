@@ -23,6 +23,11 @@ const FIFSRegistrar = require('./build/contracts/FIFSRegistrar');
 const FIFSAddrRegistrar = require('./build/contracts/FIFSAddrRegistrar');
 const Renewer = require('./build/contracts/Renewer');
 
+const ProxyFactory = require('./build/contracts/ProxyFactory');
+const ProxyAdmin = require('./build/contracts/ProxyAdmin');
+const ResolverV1 = require('./build/contracts/ResolverV1');
+const { encodeCall } = require('@openzeppelin/upgrades');
+
 function link(artifact, libName, libAddress) {
   console.log(chalk.cyan(`Linking ${libName} into ${artifact.contractName}`));
 
@@ -319,28 +324,48 @@ async function main(provider, registrations, auctionRegistrations, registrations
       await Promise.all(allAddrs);
       console.log(`Set addr for: ${domains}`);
       console.log();
+    }
   }
-  }
+
+
+  console.log(chalk.italic('Definitive resolver (proxy deployment)'));
+  const proxyFactory = await deployContract(ProxyFactory);
+  const proxyAdmin = await deployContract(ProxyAdmin);
+  const resolverV1 = await deployContract(ResolverV1);
+
+  console.log(chalk.bold('Creating instance'));
+
+  const salt = '16';
+  const data = encodeCall('initialize', ['address'], [rns.options.address]);
+
+  await executeTx(proxyFactory.methods.deploy(salt, resolverV1.options.address, proxyAdmin.options.address, data));
+
+  const deploymentAddress = await proxyFactory.methods.getDeploymentAddress(salt, from).call();
+
+  const defintiveResolver = new web3.eth.Contract(ResolverV1.abi, deploymentAddress);
+
+  console.log()
 
   console.log('Done! Summary:')
 
-  console.log('|============================|============================================|')
-  console.log('| Contract                   | Address                                    |')
-  console.log('|============================|============================================|')
-  console.log(`| RNS registry               | ${rns.options.address} |`)
-  console.log(`| Public resolver            | ${publicResolver.options.address} |`)
-  console.log(`| Multi-chain resolver       | ${multiChainResolver.options.address} |`)
-  console.log(`| Name resolver              | ${nameResolver.options.address} |`)
-  console.log(`| Reverse registrar          | ${reverseRegistrar.options.address} |`)
-  console.log(`| RIF token                  | ${rif.options.address} |`)
-  console.log(`| Auction registrar (legacy) | ${auctionRegistrar.options.address} |`)
-  console.log(`| RSK owner                  | ${rskOwner.options.address} |`)
-  console.log(`| Name price                 | ${namePrice.options.address} |`)
-  console.log(`| Bytes utils                | ${bytesUtils.options.address} |`)
-  console.log(`| FIFS registrar             | ${fifsRegistrar.options.address} |`)
-  console.log(`| FIFS addr registrar        | ${fifsAddrRegistrar.options.address} |`)
-  console.log(`| Renewer                    | ${renewer.options.address} |`)
-  console.log('|============================|============================================|\n')
+  console.log('|===============================|============================================|')
+  console.log('| Contract                      | Address                                    |')
+  console.log('|===============================|============================================|')
+  console.log(`| RNS registry                  | ${rns.options.address} |`)
+  console.log(`| Public resolver (legacy)      | ${publicResolver.options.address} |`)
+  console.log(`| Multi-chain resolver (legacy) | ${multiChainResolver.options.address} |`)
+  console.log(`| Name resolver                 | ${nameResolver.options.address} |`)
+  console.log(`| Reverse registrar             | ${reverseRegistrar.options.address} |`)
+  console.log(`| RIF token                     | ${rif.options.address} |`)
+  console.log(`| Auction registrar (legacy)    | ${auctionRegistrar.options.address} |`)
+  console.log(`| RSK owner                     | ${rskOwner.options.address} |`)
+  console.log(`| Name price                    | ${namePrice.options.address} |`)
+  console.log(`| Bytes utils                   | ${bytesUtils.options.address} |`)
+  console.log(`| FIFS registrar                | ${fifsRegistrar.options.address} |`)
+  console.log(`| FIFS addr registrar           | ${fifsAddrRegistrar.options.address} |`)
+  console.log(`| Renewer                       | ${renewer.options.address} |`)
+  console.log(`| Definitive resolver           | ${defintiveResolver.options.address} |`)
+  console.log('|===============================|============================================|\n')
 
   if (registeredDomainsAuction)
     console.log(`Registered domains with the auction registrar(legacy): ${registeredDomainsAuction}`);
@@ -370,6 +395,7 @@ async function main(provider, registrations, auctionRegistrations, registrations
     fifsRegistrar,
     fifsAddrRegistrar,
     renewer,
+    defintiveResolver
   }
 }
 
