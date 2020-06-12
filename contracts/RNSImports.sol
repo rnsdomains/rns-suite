@@ -19,5 +19,9 @@ import "@rsksmart/rns-rskregistrar/contracts/FIFSAddrRegistrar.sol";
 import "@rsksmart/rns-rskregistrar/contracts/Renewer.sol";
 import "@rsksmart/rns-rskregistrar/contracts/NamePrice.sol";
 
+import "@openzeppelin/upgrades/contracts/upgradeability/ProxyFactory.sol";
+import "@openzeppelin/upgrades/contracts/upgradeability/ProxyAdmin.sol";
+import "@rsksmart/rns-resolver/contracts/ResolverV1.sol";
+
 contract RNSImports {
 }
