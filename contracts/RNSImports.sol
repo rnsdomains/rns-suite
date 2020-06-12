@@ -2,8 +2,8 @@ pragma solidity ^0.5.3;
 
 import "@rsksmart/rns-registry/contracts/RNS.sol";
 
-import "@rsksmart/rns-resolver/contracts/PublicResolver.sol";
-import "@rsksmart/rns-resolver/contracts/MultiChainResolver.sol";
+import "@rsksmart/rns-resolver/contracts/legacy/PublicResolver.sol";
+import "@rsksmart/rns-resolver/contracts/legacy/MultiChainResolver.sol";
 
 import "@rsksmart/rns-reverse/contracts/ReverseSetup.sol";
 import "@rsksmart/rns-reverse/contracts/ReverseRegistrar.sol";
