@@ -370,7 +370,7 @@ async function main(provider, registrations, auctionRegistrations, registrations
   if (registeredDomainsAuction)
     console.log(`Registered domains with the auction registrar(legacy): ${registeredDomainsAuction}`);
 
-  if (!registeredDomainsAuction && auctionRegistrar)
+  if (!registeredDomainsAuction && auctionRegistrations && auctionRegistrations.length)
     console.log(`${chalk.yellowBright('An error occurred registering domains with the auction.')} Ensure you can execute evm_increaseTime and evm_mine`);
 
   if (registeredDomainsRSKRegistrar)
