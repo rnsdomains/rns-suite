@@ -219,6 +219,19 @@ async function main(provider, registrations, auctionRegistrations, registrations
 
       await Promise.all(allFinalizations);
 
+      /*
+      This block is useful if you want to transfer domains to your Metamask :)
+
+      let allTransfers = []
+
+      for (let i = 0; i < labels.length; i += 1)
+      allTransfers.push(
+        executeTx(auctionRegistrar.methods.transfer(labels[i], 'PASTE YOUR ADDRESS'))
+      );
+
+      await Promise.all(allTransfers);
+      */
+
       registeredDomainsAuction = domains;
     }
   } catch(error) {
