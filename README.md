@@ -1,8 +1,10 @@
-<img src="/logo.png" alt="logo" height="200" />
-
-# RNS Suite
-
-Get the RNS smart contract suite running on your local environment.
+<p align="middle">
+    <img src="https://www.rifos.org/assets/img/logo.svg" alt="logo" height="100" >
+</p>
+<h3 align="middle"><code>rns-suite</code></h3>
+<p align="middle">
+    Run RNS smart contract suite on your local environment
+</p>
 
 ## Usage
 
