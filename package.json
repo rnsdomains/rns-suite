@@ -18,7 +18,7 @@
     "url": "git+https://github.com/rnsdomains/rns-suite.git"
   },
   "author": "Javier Esses",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/rnsdomains/rns-suite/issues"
   },
